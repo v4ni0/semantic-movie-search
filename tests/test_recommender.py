@@ -22,3 +22,32 @@ class TestMovieRecommenderInit(unittest.TestCase):
         invalid_index = 'notebooks/wrong_file.index'
         with self.assertRaises(Exception):
             MovieRecommender(data_path=csv_path, index_path=invalid_index)
+
+
+class TestMovieRecommender(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.recommender = MovieRecommender(
+            model_name='all-MiniLM-L6-v2',
+            data_path='data/cleaned_movies.csv',
+            index_path='notebooks/movies_v1.index'
+        )
+
+    def test_recommend_returns_correct_number_of_results(self):
+        query = "Space travel and aliens"
+        expected_count = 5
+        results = self.recommender.recommend(query, top_k=expected_count)
+        self.assertEqual(len(results), expected_count)
+
+    def test_recommend_returns_expected_columns(self):
+        query = "Romantic comedy"
+        expected_columns = ['id', 'title', 'score']
+        results = self.recommender.recommend(query)
+        self.assertTrue(all(col in results.columns for col in expected_columns))
+
+    def test_recommend_returns_interstellar_when_given_description(self):
+        query = "A group of astronauts travels through a wormhole in space in an attempt to ensure humanity's survival."
+        results = self.recommender.recommend(query, top_k=1)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results.iloc[0]['title'], 'Interstellar')
+        self.assertNotEqual(results.iloc[0]['title'], 'Other Movie')
