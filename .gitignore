@@ -4,4 +4,6 @@ __pycache__/
 .env
 *.index
 *.npy
-*.csv
+requirements.txt
+*cache
+data/*.csv
