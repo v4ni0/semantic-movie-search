@@ -4,13 +4,15 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
+from src.config import RAW_DATA_PATH, PROCESSED_DATA_PATH, INDEX_PATH, MODEL_NAME
+
 
 class MoviePipeline:
 
-    def __init__(self, model_name='all-MiniLM-L6-v2'):
+    def __init__(self, model_name=MODEL_NAME):
         self.model = SentenceTransformer(model_name)
 
-    def run(self, raw_path:str, out_path:str = 'data/processed.csv'):
+    def run(self, raw_path:str, out_path:str = PROCESSED_DATA_PATH):
         df = pd.read_csv(raw_path, low_memory=False)
         df.drop(columns=[
             'recommendations', 'backdrop_path', 'tagline',
@@ -38,9 +40,9 @@ class MoviePipeline:
         df.to_csv(out_path, index=False)
         return df
 
-    def build_index(self, csv_path:str = 'data/processed.csv', index_path:str = 'data/movies_v1.index'):
+    def build_index(self, csv_path:str = PROCESSED_DATA_PATH, index_path:str = INDEX_PATH):
         if not os.path.exists(csv_path):
-            self.run('data/movies.csv', csv_path)
+            self.run(RAW_DATA_PATH, csv_path)
         df = pd.read_csv(csv_path)
         embeddings = self.model.encode(df['content'].tolist(),
                                        show_progress_bar=True)
@@ -51,4 +53,4 @@ class MoviePipeline:
         index.add(embeddings)
 
         os.makedirs(os.path.dirname(index_path), exist_ok=True)
-        faiss.write_index(index, index_path)
+        faiss.write_index(index, str(index_path))

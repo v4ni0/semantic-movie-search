@@ -6,5 +6,6 @@ __pycache__/
 *.npy
 requirements.txt
 *cache
-data/*.csv
+data/processed/
+data/raw/
 *.vscode

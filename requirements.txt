@@ -6,3 +6,6 @@ scikit-learn
 sentence-transformers
 faiss-cpu
 pytest
+fastapi
+uvicorn
+streamlit
