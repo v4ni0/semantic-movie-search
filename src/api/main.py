@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 
@@ -24,8 +24,11 @@ recommender = MovieRecommender()
 
 @app.post("/recommend")
 def get_recommendations(request: RecommendationRequest):
-    recommendations = recommender.recommend(request.description, request.top_k)
-    return {"recommendations": recommendations}
+    try:
+        recommendations = recommender.recommend(request.description, request.top_k)
+        return {"recommendations": recommendations}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 def main():
     uvicorn.run(app, host="0.0.0.0", port=8000)
