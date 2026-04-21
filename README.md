@@ -119,7 +119,7 @@ API docs:
 
 ### Endpoint
 
-`POST /recommend`
+`GET /recommend`
 
 Example request body:
 
